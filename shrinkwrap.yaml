@@ -2,6 +2,7 @@ dependencies:
   csv: 5.1.1
   express: 4.16.4
   isomorphic-fetch: 2.2.1
+  marked: 0.6.1
   sqlite3: 4.0.6
 packages:
   /abbrev/1.1.1:
@@ -573,6 +574,13 @@ packages:
     dev: false
     resolution:
       integrity: sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
+  /marked/0.6.1:
+    dev: false
+    engines:
+      node: '>=0.10.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-+H0L3ibcWhAZE02SKMqmvYsErLo4EAVJxu5h3bHBBDvvjeWXtl92rGUSBYHL2++5Y+RSNgl8dYOAXcYe7lp1fA==
   /media-typer/0.3.0:
     dev: false
     engines:
@@ -1152,4 +1160,5 @@ specifiers:
   csv: ^5.1.1
   express: ^4.16.4
   isomorphic-fetch: ^2.2.1
+  marked: ^0.6.1
   sqlite3: ^4.0.6
