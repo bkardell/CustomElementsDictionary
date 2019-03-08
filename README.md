@@ -12,7 +12,7 @@ This is currently an incredibly simplistic glitch which contains <a href="https:
 
 
 # Helping out
-This glitch is linked to [https://github.com/bkardell/CustomElementsData](https://github.com/bkardell/CustomElementsData), so if you want to make this better, or have information on the possible implementation details of one of these, you can create an issue there or just send a pull adding or modifying a json file there.
+This glitch (https://glitch.com/edit/#!/brawny-force?path=README.md:15:27) is linked to [https://github.com/bkardell/CustomElementsDictionary](https://github.com/bkardell/CustomElementsDictionary), so if you want to make this better, or have information on the possible implementation details of one of these, you can create an issue there or just send a pull adding or modifying a json file there.
 
 
 

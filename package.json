@@ -18,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bkardell/CustomElementsData.git"
+    "url": "git+https://github.com/bkardell/CustomElementsDictionary.git"
   },
   "author": "bkardell",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/bkardell/CustomElementsData/issues"
+    "url": "https://github.com/bkardell/CustomElementsDictionary/issues"
   },
-  "homepage": "https://github.com/bkardell/CustomElementsData#readme"
+  "homepage": "https://github.com/bkardell/CustomElementsDictionary#readme"
 }
