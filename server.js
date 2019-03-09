@@ -80,6 +80,274 @@ function makeCloudPage(title, desc="", cloudData) {
   `
 }
 
+app.get('/bubble/standard/frequency', function (request, response) {
+  // sort by freq
+  stdElementsData.sort((a, b) => {
+    if (a.frequency < b.frequency) return 1
+    if (b.frequency < a.frequency) return -1
+    return 0
+  })
+  let max = stdElementsData[0].frequency
+  let simpleData = {}
+  stdElementsData.forEach(data => {
+    simpleData[data.tag] = 
+        ((data.frequency/max) * 150)
+  })
+  response.send(`
+    <style>
+      body {  
+        background: #293950;
+        color: #ecf0f0;
+        padding: 2rem;
+      }
+      circle {
+        color: gray;
+      }
+
+      section { width: 80%; margin: 1rem auto; }
+      a[href] {
+        color: white;
+      }
+
+      svg { min-width: 600px; max-width: 800px; margin: 1rem auto; }
+    
+    </style>
+    <h1>Relative frequency: Standard Elements</h1>
+    <p>This page shows the relative frequency of HTML elements from the HTTPArchive report. <a href="/">Learn More about the project.</a>.</p>
+      
+    <section id="graph"></section>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
+    <script>
+      //(function() {
+
+  var sourceData = ${JSON.stringify(stdElementsData)}
+  // Fake JSON data
+  var json = {"data": ${JSON.stringify(simpleData)}};
+  
+	// D3 Bubble Chart 
+
+  var colorCircles = d3.scale.category10();
+
+	var diameter = Math.min(window.innerWidth - 50, window.innerHeight - 100);
+
+	var svg = d3.select('#graph').append('svg')
+					.attr('width', diameter)
+					.attr('height', diameter)
+
+  var tooltip = d3.select('#graph')
+          .append("div")
+           .style("position", "absolute")
+           .style("visibility", "hidden")
+           .style("color", "white")
+           .style("padding", "8px")
+           .style("background-color", "#626D71")
+           .style("border-radius", "6px")
+           .style("text-align", "center")
+           .style("font-family", "monospace")
+           .style("width", "400px")
+           .text("")
+;
+
+    
+	var bubble = d3.layout.pack()
+				.size([diameter-2, diameter-2])
+				.value(function(d) {return d.size;})
+         // .sort(function(a, b) {
+				// 	return -(a.value - b.value)
+				// }) 
+				.padding(3);
+  
+  // generate data with calculated layout values
+  var nodes = bubble.nodes(processData(json))
+						.filter(function(d) { return !d.children; }); // filter out the outer bubble
+ 
+  var vis = svg.selectAll('circle')
+					.data(nodes);
+  
+  vis.enter().append('circle')
+			.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+			.attr('r', function(d) { return d.r; })
+			.attr('class', function(d) { return d.className; })
+      .style("fill", function(d) { return colorCircles(d.className)})
+      .on("mouseover", function(d){
+           tooltip.html(d.className+"<br>frequency: "+ sourceData.find(rec => rec.tag==d.name).frequency); 
+           return tooltip.style("visibility", "visible");})
+         .on("mousemove", function(){
+           return tooltip.style("top", (d3.event.pageY-       10)+"px").style("left",(d3.event.pageX+10)+"px");
+        })
+       .on("mouseout", function(){
+          return tooltip.style("visibility", "hidden");
+        })
+        .text(function (d) {
+          return d.className
+        })
+
+    svg.selectAll('text')
+        .data(bubble.nodes(processData(json)))
+        .enter()
+        .append("text")
+        .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+			  .attr({
+            "text-anchor": "middle",
+            "font-size": function(d) {
+              return d.size - (d.size/2);
+            },
+            "dy": function(d) {
+              return d.r / ((d.r * 25) / 100);
+            }
+          })        
+        .text( function (d) { 
+          console.log('here') 
+          return d.name  
+          })
+
+  
+  function processData(data) {
+    var obj = data.data;
+
+    var newDataSet = [];
+
+    for(var prop in obj) {
+      newDataSet.push({name: prop, className: prop.toLowerCase(), size: obj[prop]});
+    }
+    return {children: newDataSet};
+  }
+  
+//})();</script>
+`)
+})
+
+
+
+app.get('/test2', function (request, response) {
+  // sort by freq
+  stdElementsData.sort((a, b) => {
+    if (a.frequency < b.frequency) return 1
+    if (b.frequency < a.frequency) return -1
+    return 0
+  })
+  let max = stdElementsData[0].frequency
+  let simpleData = {}
+  stdElementsData.forEach(data => {
+    simpleData[data.tag] = 
+        ((data.frequency/max) * 150)
+  })
+  response.send(`
+    <style>
+      body {  
+        background: #293950;
+        color: #ecf0f0;
+      }
+      circle {
+        color: gray;
+      }
+
+      text {
+        color: white;
+      }
+
+      svg { width: 100%; margin: 1rem auto; }
+    
+    </style>
+    <section id="graph"></section>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
+    <script>
+      //(function() {
+
+  var sourceData = ${JSON.stringify(stdElementsData)}
+  // Fake JSON data
+  var json = {"data": ${JSON.stringify(simpleData)}};
+  
+	// D3 Bubble Chart 
+
+  var colorCircles = d3.scale.category10();
+
+	var diameter = Math.max(window.innerWidth, window.innerHeight);
+
+	var svg = d3.select('#graph').append('svg')
+					.attr('width', diameter)
+					.attr('height', diameter)
+
+  var tooltip = d3.select('#graph')
+          .append("div")
+           .style("position", "absolute")
+           .style("visibility", "hidden")
+           .style("color", "white")
+           .style("padding", "8px")
+           .style("background-color", "#626D71")
+           .style("border-radius", "6px")
+           .style("text-align", "center")
+           .style("font-family", "monospace")
+           .style("width", "400px")
+           .text("")
+;
+
+    
+	var bubble = d3.layout.pack()
+				.size([diameter, diameter])
+				.value(function(d) {return d.size;})
+        .padding(3);
+  
+  // generate data with calculated layout values
+  var nodes = bubble.nodes(processData(json))
+						.filter(function(d) { return !d.children; }); // filter out the outer bubble
+ 
+  var vis = svg.selectAll('circle')
+					.data(nodes);
+  
+  vis.enter().append('circle')
+			.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+			.attr('r', function(d) { return d.r; })
+			.attr('class', function(d) { return d.className; })
+      .style("fill", function(d) { return colorCircles(d.className)})
+      .on("mouseover", function(d){
+           tooltip.html(d.className+"<br>frequency: "+ sourceData.find(rec => rec.tag==d.name).frequency); 
+           return tooltip.style("visibility", "visible");})
+         .on("mousemove", function(){
+           return tooltip.style("top", (d3.event.pageY-       10)+"px").style("left",(d3.event.pageX+10)+"px");
+        })
+       .on("mouseout", function(){
+          return tooltip.style("visibility", "hidden");
+        })
+        .text(function (d) {
+          return d.className
+        })
+
+    svg.selectAll('text')
+        .data(bubble.nodes(processData(json)))
+        .enter()
+        .append("text")
+        .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+			  .attr({
+            "text-anchor": "middle",
+            "font-size": function(d) {
+              return d.size - (d.size/2);
+            },
+            "dy": function(d) {
+              return d.r / ((d.r * 25) / 100);
+            }
+          })        
+        .text( function (d) { 
+          console.log('here') 
+          return d.name  
+          })
+
+  
+  function processData(data) {
+    var obj = data.data;
+
+    var newDataSet = [];
+
+    for(var prop in obj) {
+      newDataSet.push({name: prop, className: prop.toLowerCase(), size: obj[prop]});
+    }
+    return {children: newDataSet};
+  }
+  
+//})();</script>
+`)
+})
+
 app.get('/cloud/standard/frequency', function (request, response)  {
   stdElementsData.sort((a, b) => {
     if (a.frequency < b.frequency) return 1
@@ -194,6 +462,48 @@ app.get('/tags/:top', function(request, response) {
 app.get('/tags/', (request, response) => {
   response.send(listTags())
 })
+
+
+
+
+app.get('/cloud/x/frequency', function (request, response)  {
+  stdElementsData.sort((a, b) => {
+    if (a.frequency < b.frequency) return 1
+    if (b.frequency < a.frequency) return -1
+    return 0
+  })
+
+  let dataset = stdElementsData.slice()
+  if (request.query.zoom) {
+    dataset = dataset.filter(rec=> rec.frequency < request.query.zoom)
+  }
+  let max = dataset[0].frequency
+  let cloud = dataset.map(rec => {
+     return `<a href="/cloud/x/frequency?zoom=${rec.frequency}" ><span style="margin: 2rem; font-size: ${
+       Math.max(
+        ((rec.frequency>max?.1:(rec.frequency/max)) * 150), 
+       4
+       )}px;">${rec.tag}</span></a>` 
+  }).join(' ')
+  
+  response.send(
+    makeCloudPage(
+      'Relative frequency: Standard Elements',
+      `<p>This page shows the relative frequency of HTML elements from the HTTPArchive report. <a href="/">Learn More about the project.</a>.</p>
+       <p>click on a tag to zoom that tag to the max size.</p>
+        
+       ${(stdElementsData.length !== dataset.length) 
+          ?
+          `<p>${stdElementsData.length - dataset.length} elements occur more frequently than those shown, <a href="/cloud/x/frequency">see them all</a></p>`
+          :
+          ''
+       
+      }`,
+      cloud
+    )
+  )
+})
+
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function() {

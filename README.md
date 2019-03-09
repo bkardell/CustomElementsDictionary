@@ -17,6 +17,7 @@ I'm also toying with a few visualization of these on some urls that will probabl
 
 * [https://brawny-force.glitch.me/cloud/standard/frequency](https://brawny-force.glitch.me/cloud/standard/frequency)
 * [https://brawny-force.glitch.me/cloud/standard/urls](https://brawny-force.glitch.me/cloud/standard/urls)
+* [https://brawny-force.glitch.me/bubble/standard/frequency](https://brawny-force.glitch.me/bubble/standard/frequency)
 
 This one does the same for the one datapoint we currently have for dasherized elements
 * [https://brawny-force.glitch.me/cloud/dasherized/frequency](https://brawny-force.glitch.me/cloud/dasherized/frequency)
