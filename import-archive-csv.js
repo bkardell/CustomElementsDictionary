@@ -51,4 +51,33 @@ keys.forEach((key) => {
 })
 
 // write out the nice clean file
-fs.writeFileSync('./imported-data.json', JSON.stringify(sortedData, null, 2), 'utf8')
+fs.writeFileSync(
+  './imported-data.json', 
+  JSON.stringify(sortedData, null, 2), 
+  'utf8'
+)
+
+
+
+// we can also do the same for stanard element data I guess
+input = fs.readFileSync('./http-archive-standard-elements.csv', 'utf8')
+
+csvRecords = parse(input, {
+    columns: true,
+    skip_empty_lines: true
+  })
+
+// should be able to do this with parse, but it isn't working :(
+csvRecords = csvRecords.map(rec => {
+  rec.frequency = parseInt(rec.frequency, 10)
+  rec.urls = parseInt(rec.urls, 10)
+  rec.percent = parseInt(rec.percent, 10)
+  return rec
+})
+
+fs.writeFileSync(
+  './imported-standard-element-data.json', 
+  JSON.stringify(csvRecords, null, 2), 
+  'utf8'
+)
+console.log('all done')
