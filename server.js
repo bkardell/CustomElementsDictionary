@@ -8,6 +8,7 @@ import fs from 'fs'
 import cloudPage from './renderers/cloud.js'
 import bubblePage from './renderers/bubble.js'
 import DasherizedTopTabularPage from './renderers/dasherized/frequency/top.js'
+import DasherizedDetailsPage from './renderers/dasherized/frequency/details.js'
 import DasherizedFrequencyCloudPage from './renderers/dasherized/frequency/cloud.js'
 import StandardFrequencyCloudPage from './renderers/standard/frequency/cloud.js'
 import StandardURLsCloudPage from './renderers/standard/urls/cloud.js'
@@ -41,16 +42,32 @@ app.get('/', function(request, response) {
 
 app.get('/bubble/standard/frequency', function (request, response) {
   // sort by freq
-  stdElementsData.sort((a, b) => {
+  let dataset = stdElementsData.sort((a, b) => {
     if (a.frequency < b.frequency) return 1
     if (b.frequency < a.frequency) return -1
     return 0
   })
+  
+  if (request.query.zoom) {
+    dataset = dataset.filter(rec=> rec.total <= request.query.zoom)
+  }
+  
+  // pull the max value from the 'top' one
   let max = stdElementsData[0].frequency
+  
+  // Todo: unwind/rewrite this as I figure out what this 
+  // wants to be when it grows up... I should we working with 
+  // copies or static churned things - this is weird.
+  // also, this is half done, this needs to create a filtered dataset
+  // and so on, like the things that render the cloud ones currently
+  // and should model it's calls similarly
   let simpleData = {}
   stdElementsData.forEach(data => {
     simpleData[data.tag] = 
         ((data.frequency/max) * 150)
+    
+    data.url = 
+      `/bubble/standard/frequency?zoom=${data.frequency}`
   })
   response.send(
     bubblePage.render(stdElementsData, simpleData)
@@ -61,7 +78,7 @@ app.get('/bubble/standard/frequency', function (request, response) {
 // datasets passed to cloud render fns [{ tag, url, scaledValue }]
  
 app.get('/cloud/dasherized/frequency', function (request, response)  {
-  // it is inconvenient that we churn these into two diff forms, 
+  // TODO: it is inconvenient that we churn these into two diff forms, 
   // we should probably just normalize this upfront
   let dataset = allTags.map(tag => {
      return {
@@ -95,39 +112,12 @@ app.get('/cloud/dasherized/frequency', function (request, response)  {
 
 
 app.get('/tags/details/:name', function(request, response) {
-  let rec = data[request.params.name]
-  const metaPath = `./tags/${request.params.name}.json`
-  let hasMeta = fs.existsSync(metaPath)
-  let meta = (!hasMeta) 
-              ?
-              '<p>none available</p>' 
-              : 
-              fs.readFileSync(metaPath, 'utf-8') 
-  
-  response.send(`
-    <style>main { width: 80%; margin: 1rem auto; }</style>
-    <main>
-      <h1>Detail Data For <code>&lt;${request.params.name}&gt;</code></h1>
-      <p>This page presents a view of information from 
-        <a href="https://discuss.httparchive.org/t/use-of-custom-elements-with-attributes/1592">a report
-        generated from the HTTPArchive</a> about the use of dasherized (custom) elements in 
-        it's dataset of the 'most popular' 1.2 million or so sites. See also <a href="/tags">the complete list 
-        with totals.</a></p>
-        <section>
-          <h1>Meta Info</h1>
-          <pre>${meta}</pre>
-          <p>Learn how you can <a href="/#helping-out">submit some and help out</a>.</p>
-        </section>
-      <section>
-        <h1>Individual Data from Report</h1>
-        <pre>${
-            JSON.stringify(rec, null, 4)
-              .replace(/[\<]/gi, '&lt;')
-              .replace(/[\>]/gi, '&gt;')
-              .replace(/\\n /gi, ' ')
-            }</pre>
-    </main>
-    `)
+  response.send(
+    DasherizedDetailsPage.render({
+      name: request.params.name, 
+      rec: data[request.params.name]
+    })
+  )
 });
 
 app.get('/tags/:top', function(request, response) {

@@ -20,6 +20,7 @@ export default {
           svg { width: 100%; margin: 1rem auto; }
 
         </style>
+        
         <section id="graph"></section>
         <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
         <script>
@@ -72,10 +73,13 @@ export default {
           .attr('class', function(d) { return d.className; })
           .style("fill", function(d) { return colorCircles(d.className)})
           .on("mouseover", function(d){
-               tooltip.html(d.className+"<br>frequency: "+ sourceData.find(rec => rec.tag==d.name).frequency); 
+               tooltip.html(d.className+"<br>frequency: "+ sourceData.find(rec => rec.tag==d.name).frequency.toLocaleString()); 
                return tooltip.style("visibility", "visible");})
              .on("mousemove", function(){
                return tooltip.style("top", (d3.event.pageY-       10)+"px").style("left",(d3.event.pageX+10)+"px");
+            })
+           .on("click", function(d) {
+              window.location.href = sourceData.find(rec => rec.tag==d.name).url
             })
            .on("mouseout", function(){
               return tooltip.style("visibility", "hidden");
@@ -99,7 +103,6 @@ export default {
                 }
               })        
             .text( function (d) { 
-              console.log('here') 
               return d.name  
               })
 
