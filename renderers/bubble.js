@@ -1,8 +1,7 @@
 import marked from 'marked'
 
 export default {
-  
-  render: (elementsRecords, scaledData) => {
+  render: ({desc, dataset, graphData, unfilteredDatasetSize}) => {
     return `
         <style>
           body {  
@@ -13,22 +12,25 @@ export default {
             color: gray;
           }
 
-          text {
+          a[href]:not(#boost), text {
             color: white;
           }
 
           svg { width: 100%; margin: 1rem auto; }
 
         </style>
-        
-        <section id="graph"></section>
+        <main>
+          ${marked(desc)}
+          <hr>
+          <section id="graph"></section>
+        </main>  
         <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
         <script>
-          //(function() {
+          //(function() {dataset
 
-      var sourceData = ${JSON.stringify(elementsRecords)}
+      var sourceData = ${JSON.stringify(dataset)}
       // Fake JSON data
-      var json = {"data": ${JSON.stringify(scaledData)}}
+      var json = {"data": ${JSON.stringify(graphData)}}
 
       // D3 Bubble Chart 
 

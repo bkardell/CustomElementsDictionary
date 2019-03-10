@@ -6,11 +6,14 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import fs from 'fs'
 import cloudPage from './renderers/cloud.js'
-import bubblePage from './renderers/bubble.js'
+//import bubblePage from './renderers/bubble.js'
+
 import DasherizedTopTabularPage from './renderers/dasherized/frequency/top.js'
 import DasherizedDetailsPage from './renderers/dasherized/frequency/details.js'
 import DasherizedFrequencyCloudPage from './renderers/dasherized/frequency/cloud.js'
 import StandardFrequencyCloudPage from './renderers/standard/frequency/cloud.js'
+import StandardFrequencyBubblePage from './renderers/standard/frequency/bubble.js'
+
 import StandardURLsCloudPage from './renderers/standard/urls/cloud.js'
 
 
@@ -42,35 +45,37 @@ app.get('/', function(request, response) {
 
 app.get('/bubble/standard/frequency', function (request, response) {
   // sort by freq
-  let dataset = stdElementsData.sort((a, b) => {
-    if (a.frequency < b.frequency) return 1
-    if (b.frequency < a.frequency) return -1
-    return 0
-  })
+  sortStandardElementsByFrequency()
+  let dataset = [...stdElementsData]
   
+  console.log(dataset) 
   if (request.query.zoom) {
-    dataset = dataset.filter(rec=> rec.total <= request.query.zoom)
+    dataset = dataset.filter(rec=> rec.frequency <= request.query.zoom)
   }
   
   // pull the max value from the 'top' one
-  let max = stdElementsData[0].frequency
+  let max = dataset[0].frequency
+  
   
   // Todo: unwind/rewrite this as I figure out what this 
   // wants to be when it grows up... I should we working with 
   // copies or static churned things - this is weird.
-  // also, this is half done, this needs to create a filtered dataset
-  // and so on, like the things that render the cloud ones currently
-  // and should model it's calls similarly
-  let simpleData = {}
-  stdElementsData.forEach(data => {
-    simpleData[data.tag] = 
+  let graphData = {}
+  dataset.forEach(data => {
+    graphData[data.tag] = 
         ((data.frequency/max) * 150)
     
     data.url = 
       `/bubble/standard/frequency?zoom=${data.frequency}`
   })
+  
+  console.log(dataset, graphData)
   response.send(
-    bubblePage.render(stdElementsData, simpleData)
+    StandardFrequencyBubblePage.render({
+      dataset, 
+      graphData,
+      unfilteredDatasetSize:  stdElementsData.length
+    })
   )
 })
 
