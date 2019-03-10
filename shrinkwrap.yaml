@@ -1,5 +1,6 @@
 dependencies:
   csv: 5.1.1
+  esm: 3.2.14
   express: 4.16.4
   isomorphic-fetch: 2.2.1
   marked: 0.6.1
@@ -273,6 +274,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=
+  /esm/3.2.14:
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-uQq8DK0HB0n2Ze9gshhxGQa60caKmwNH7tKxALAT6wxYGfQCdEMXA3MV3z1rh8TSmQIVFYbltm9Xe1ghusnCqw==
   /etag/1.8.1:
     dev: false
     engines:
@@ -1158,6 +1165,7 @@ shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   csv: ^5.1.1
+  esm: ^3.2.14
   express: ^4.16.4
   isomorphic-fetch: ^2.2.1
   marked: ^0.6.1

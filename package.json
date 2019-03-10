@@ -4,14 +4,15 @@
   "description": "Thinking about how we can collect and do useful things with information about custom elements",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node -r esm server.js"
   },
   "dependencies": {
     "express": "^4.16.4",
     "sqlite3": "^4.0.6",
     "isomorphic-fetch": "^2.2.1",
     "csv": "^5.1.1",
-    "marked": "^0.6.1"
+    "marked": "^0.6.1",
+    "esm": "^3.2.14"
   },
   "engines": {
     "node": "11.x"
