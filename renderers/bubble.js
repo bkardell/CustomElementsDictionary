@@ -12,7 +12,8 @@ export default {
             color: gray;
           }
 
-          a[href]:not(#boost), text {
+          a[href]:not(#boost), 
+          text {
             color: white;
           }
 
@@ -97,8 +98,11 @@ export default {
             .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
             .attr({
                 "text-anchor": "middle",
-                "font-size": function(d) {
-                  return d.size - (d.size/2);
+                "font-color": "white", 
+                "font-size": function(d, i) {
+                  
+                  let size = json.data[(sourceData[i]||{}).tag] || 1
+                  return size - (size/2);
                 },
                 "dy": function(d) {
                   return d.r / ((d.r * 25) / 100);
