@@ -11,6 +11,7 @@ import cloudPage from './renderers/cloud.js'
 import DasherizedTopTabularPage from './renderers/dasherized/frequency/top.js'
 import DasherizedDetailsPage from './renderers/dasherized/frequency/details.js'
 import DasherizedFrequencyCloudPage from './renderers/dasherized/frequency/cloud.js'
+import DasherizedFrequencyBubblePage from './renderers/dasherized/frequency/bubble.js'
 import StandardFrequencyCloudPage from './renderers/standard/frequency/cloud.js'
 import StandardFrequencyBubblePage from './renderers/standard/frequency/bubble.js'
 
@@ -69,7 +70,6 @@ app.get('/bubble/standard/frequency', function (request, response) {
       `/bubble/standard/frequency?zoom=${data.frequency}`
   })
   
-  console.log(dataset, graphData)
   response.send(
     StandardFrequencyBubblePage.render({
       dataset, 
@@ -79,6 +79,41 @@ app.get('/bubble/standard/frequency', function (request, response) {
   )
 })
 
+app.get('/bubble/dasherized/frequency', function (request, response)  {
+  // TODO: it is inconvenient that we churn these into two diff forms, 
+  // we should probably just normalize this upfront
+  let dataset = allTags.map(tag => {
+     return {
+          tag, 
+          url:  `/cloud/dasherized/frequency?zoom=${data[tag].total}`,
+          total: data[tag].total,
+          frequency: data[tag].total
+     }
+  })
+  
+  if (request.query.zoom) {
+    dataset = dataset.filter(rec=> rec.total <= request.query.zoom)
+  }
+  
+  let max = dataset[0].total
+  // for dasherized things the same values should work
+  let graphData = {}
+  dataset.forEach(rec => {
+    graphData[rec.tag] = 
+      Math.max(
+        ((rec.total/max) * 150), 
+        4
+      )
+  })
+                     
+  response.send(
+    DasherizedFrequencyBubblePage.render({
+      dataset,
+      graphData,
+      unfilteredDatasetSize: allTags.length
+    })
+  )
+})
 
 // datasets passed to cloud render fns [{ tag, url, scaledValue }]
  
@@ -125,7 +160,7 @@ app.get('/tags/details/:name', function(request, response) {
   )
 });
 
-app.get('/tags/:top', function(request, response) {
+app.get('/tags/dasherized/:top', function(request, response) {
   console.log('params', request.params.top)
   response.send(
     DasherizedTopTabularPage.render(
@@ -136,7 +171,7 @@ app.get('/tags/:top', function(request, response) {
   )
 });
 
-app.get('/tags/', (request, response) => {
+app.get('/tags/dasherized', (request, response) => {
   response.send(DasherizedTopTabularPage.render(
       data,
       allTags
